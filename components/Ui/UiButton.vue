@@ -3,17 +3,19 @@ interface ButtonProps {
   href?: string,
   title?: string,
   option?: 'bg-blur' | 'bg-white',
+  target?: '_self' | '_blank',
 }
 
 const props = withDefaults(defineProps<ButtonProps>(), {
   href: '#',
   title: 'Обсудить проект',
   option: 'bg-blur',
+  target: '_self',
 })
 </script>
 
 <template>
-  <a :href="href" :class="['button-ui', `button-ui_${option}`]" class="button-ui button-ui_bg-blur">
+  <a :href="href" :class="['button-ui', `button-ui_${option}`]" :target="target">
     <span class="button-ui__inner p2">
       <span class="button-ui__title ">{{ title }}</span>
       <span class="button-ui__title ">{{ title }}</span>
@@ -23,6 +25,8 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 
 <style lang="scss" scoped>
 .button-ui{
+  width: min-content;
+  white-space: nowrap;
   padding: 1rem 1.5rem;
   border-radius: 100px;
 
