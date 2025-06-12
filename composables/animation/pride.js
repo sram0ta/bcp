@@ -24,5 +24,5 @@ export default function prideScrollAnimation(container) {
         },
     })
 
-    tl.fromTo(list, { xPercent: 50 }, { xPercent: -111, ease: 'none' })
+    tl.fromTo(list, { xPercent: 50 }, { xPercent: -110.5, ease: 'none' })
 }

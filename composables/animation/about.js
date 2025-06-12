@@ -41,7 +41,7 @@ export default function aboutAnimation(titleElement) {
             end: 'center center',
             scrub: true,
             pin: false,
-            markers: true,
+            markers: false,
         },
     })
 
