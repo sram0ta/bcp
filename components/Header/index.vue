@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import {ref, onMounted, onBeforeUnmount} from 'vue'
 
 const headerButtons = [
   { href: '#about-us', title: 'О нас', option: 'bg-blur' },
@@ -28,7 +28,7 @@ const buttonFormTitle = ref<string>('Обсудить проект')
 const buttonFormOption = ref<'bg-blur' | 'bg-white' | 'bg-red'>('bg-red')
 
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('scroll', handleScroll)
 })
 

@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { WpApi } from '~/composables/WpApi'
 import aboutAnimation from '~/composables/animation/about'
+import { gsap } from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const { fetchData } = WpApi();
 
@@ -26,8 +30,6 @@ onMounted(async () => {
     if (response?.acf) {
       aboutData.value = response.acf
 
-      console.log(aboutData)
-
       aboutTitle.value = response.acf.about_title ?? '';
       aboutDescription.value = response.acf.about_description ?? '';
 
@@ -36,6 +38,8 @@ onMounted(async () => {
       if (aboutTitleRef.value) {
         aboutAnimation(aboutTitleRef.value)
       }
+
+      ScrollTrigger.refresh();
     } else {
       console.warn('Неполные данные:', response)
     }
@@ -43,8 +47,8 @@ onMounted(async () => {
     console.error('Ошибка при загрузке:', error)
   }
 });
-
 </script>
+
 
 <template>
   <div class="container about grid-12">

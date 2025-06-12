@@ -4,11 +4,15 @@ import ScrollTrigger from 'gsap/dist/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 export default function aboutAnimation(titleElement) {
-    if (!titleElement) return
 
-    const text = titleElement.textContent || ''
+    if (!titleElement) return;
+
+    const text = titleElement.textContent
+
+    if (!text) return
 
     const words = text.split(/(\s+)/)
+
 
     titleElement.innerHTML = words
         .map(word => {
@@ -33,8 +37,8 @@ export default function aboutAnimation(titleElement) {
     const tl = gsap.timeline({
         scrollTrigger: {
             trigger: '.about',
-            start: 'top +=115%',
-            end: 'bottom center',
+            start: 'top bottom',
+            end: 'center center',
             scrub: true,
             pin: false,
             markers: true,
@@ -47,3 +51,4 @@ export default function aboutAnimation(titleElement) {
         duration: 0.1,
     })
 }
+

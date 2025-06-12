@@ -10,8 +10,9 @@ interface SectionHero {
   }
 }
 
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { WpApi } from '~/composables/WpApi'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 
 const heroData = ref<SectionHero | null>(null);
 const heroIconUrl = ref<string>('');
@@ -25,8 +26,10 @@ const heroButtonOption = ref<string>('');
 const { fetchData } = WpApi();
 
 onMounted(async () => {
+
   try {
     const response = await fetchData<SectionHero>('pages/16', '?_fields=acf')
+    ScrollTrigger.refresh();
 
     if (response?.acf) {
       heroData.value = response.acf
@@ -43,6 +46,8 @@ onMounted(async () => {
         heroIconUrl.value = media?.source_url || ''
         heroIconAlt.value = media?.alt_text || ''
       }
+
+      ScrollTrigger.refresh();
     } else {
       console.warn('Неполные данные:', response)
     }
