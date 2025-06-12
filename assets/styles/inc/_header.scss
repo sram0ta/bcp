@@ -1,9 +1,15 @@
 .header{
   position: fixed;
+  width: 100%;
   top: 0;
   padding: 1.5rem 1.5rem 0 1.5rem;
   z-index: 9999;
   transition: .5s;
+
+  &.hidden{
+    transform: translateY(-110%);
+    transition: .5s;
+  }
 
   &__logo{
     grid-column: 1 / 3;
@@ -53,5 +59,139 @@
     display: flex;
     align-items: center;
     gap: 0 .5rem;
+  }
+}
+
+.burger{
+  cursor: pointer;
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 4.65rem;
+  height: 4.65rem;
+  border-radius: 20px;
+  background-color: $c-w;
+  border: 1px solid #C2C2C2;
+  z-index: 9999;
+  transform: translateX(calc(100% + 1.5rem));
+  transition: .3s;
+
+  &.active{
+    transform: translateX(0);
+    transition: .6s;
+  }
+
+  &__inner{
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__item{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2rem;
+    height: 2px;
+    background-color: $c-b;
+    transition: .5s;
+
+    &:first-child{
+      transform: translate(-50%, -5px);
+
+    }
+
+    &:last-child{
+      transform: translate(-50%, 5px);
+    }
+  }
+}
+
+.burger-menu{
+  position: fixed;
+  top: 7rem;
+  right: 1.5rem;
+  width: 34rem;
+  background-color: $c-w;
+  border: 1px solid #C2C2C2;
+  height: calc(100% - 7rem - .75rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5rem 0;
+  border-radius: 30px;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  z-index: 99999999;
+  transition: .5s;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &.open{
+    opacity: 1;
+    visibility: initial;
+    pointer-events: all;
+    transition: .5s;
+  }
+
+  &__navigation{
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem 0;
+  }
+
+  &__item{
+    width: fit-content;
+    color: $c-b;
+    transition: .5s;
+
+    &:hover{
+      opacity: .5;
+      transition: .5s;
+    }
+  }
+
+  &__block{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem 0;
+
+    &__title{
+      color: $c-b;
+      opacity: .7;
+    }
+  }
+
+  &-contacts{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem 0;
+    margin-bottom: 2.5rem;
+  }
+
+  .button-ui{
+    width: 100% !important;
+  }
+
+  &__download{
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 0 .5rem;
+    color: $c-b;
+    transition: .5s;
+
+    &:hover{
+      opacity: .5;
+      transition: .5s;
+    }
   }
 }

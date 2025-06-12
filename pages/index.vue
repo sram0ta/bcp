@@ -1,11 +1,13 @@
 <script setup>
 
-import HeroSection from "~/components/Main/HeroSection.vue";
+import SectionHero from "~/components/Main/SectionHero.vue";
+import SectionAbout from "~/components/Main/SectionAbout.vue";
 </script>
 
 <template>
   <main class="main-index">
-    <HeroSection/>
+    <SectionHero/>
+    <SectionAbout/>
   </main>
 </template>
 

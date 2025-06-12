@@ -2,7 +2,7 @@
 interface ButtonProps {
   href?: string,
   title?: string,
-  option?: 'bg-blur' | 'bg-white',
+  option?: 'bg-blur' | 'bg-white' | 'bg-red',
   target?: '_self' | '_blank',
 }
 
@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   white-space: nowrap;
   padding: 1rem 1.5rem;
   border-radius: 100px;
+  box-sizing: border-box;
 
   &_bg-blur{
     background: #FFFFFF4D;
@@ -41,6 +42,12 @@ const props = withDefaults(defineProps<ButtonProps>(), {
     .button-ui__title{
       color: #3C3C3C;
     }
+  }
+
+  &_bg-red{
+    background-color: #E72121;
+    display: flex;
+    justify-content: center;
   }
 
   &:hover{

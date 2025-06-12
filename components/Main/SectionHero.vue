@@ -1,5 +1,5 @@
 <script setup lang="ts">
-interface HeroSection {
+interface SectionHero {
   hello_title?: string
   hello_icon?: number
   hello_description?: string
@@ -13,7 +13,7 @@ interface HeroSection {
 import { ref, onMounted, computed } from 'vue'
 import { WpApi } from '~/composables/WpApi'
 
-const heroData = ref<HeroSection | null>(null);
+const heroData = ref<SectionHero | null>(null);
 const heroIconUrl = ref<string>('');
 const heroIconAlt = ref<string>('');
 const heroDescription = ref<string>('');
@@ -26,7 +26,7 @@ const { fetchData } = WpApi();
 
 onMounted(async () => {
   try {
-    const response = await fetchData<HeroSection>('pages/16', '?_fields=acf')
+    const response = await fetchData<SectionHero>('pages/16', '?_fields=acf')
 
     if (response?.acf) {
       heroData.value = response.acf
@@ -43,8 +43,6 @@ onMounted(async () => {
         heroIconUrl.value = media?.source_url || ''
         heroIconAlt.value = media?.alt_text || ''
       }
-
-      console.log('heroData:', heroData.value)
     } else {
       console.warn('Неполные данные:', response)
     }
