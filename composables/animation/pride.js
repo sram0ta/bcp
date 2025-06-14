@@ -9,20 +9,34 @@ export default function prideScrollAnimation(container) {
     const list = container.querySelector('.pride__list')
     if (!list) return
 
+    const containerWidth = container.offsetWidth
+    const listWidth = list.scrollWidth
 
-    gsap.set(list, { xPercent:  50})
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize)
+
+    const isLaptop = window.innerWidth < 1366
+    const offsetPx = rem * (isLaptop ? 1 : 1.5)
+
+    const startX = (containerWidth / 2)
+
+    const endX = -(listWidth - containerWidth + offsetPx)
+
+    gsap.set(list, { x: startX })
 
     const tl = gsap.timeline({
         scrollTrigger: {
             trigger: container,
-            start: 'bottom bottom',
-            end: '+=6000',
+            start: 'top top',
+            end: `+=${listWidth}`,
             scrub: true,
             pin: true,
-            markers: false,
             pinSpacing: true,
+            markers: false,
         },
     })
 
-    tl.fromTo(list, { xPercent: 50 }, { xPercent: -110.5, ease: 'none' })
+    tl.to(list, {
+        x: endX,
+        ease: 'none',
+    })
 }

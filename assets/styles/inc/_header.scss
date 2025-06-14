@@ -6,6 +6,14 @@
   z-index: 9999;
   transition: .5s;
 
+  @include laptop {
+    padding: .5rem 1rem 0 1rem;
+  }
+
+  @include mobile {
+    padding: .5rem .5rem 0 .5rem;
+  }
+
   &.hidden{
     transform: translateY(-110%);
     transition: .5s;
@@ -16,6 +24,11 @@
     width: 12rem;
     height: 3.4rem;
     transition: .5s;
+
+    @include laptop {
+      width: 5.35rem;
+      height: 1.55rem;
+    }
 
     &:hover{
       opacity: .5;
@@ -48,6 +61,11 @@
       svg{
         width: .7rem;
         height: .7rem;
+
+        @include laptop {
+          width: .5rem;
+          height: .5rem;
+        }
       }
     }
   }

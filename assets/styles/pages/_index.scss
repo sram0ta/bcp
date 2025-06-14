@@ -5,6 +5,12 @@
   margin-bottom: 10rem;
   gap: 2.5rem 0;
 
+  @include laptop{
+    padding-top: 4.5rem;
+    margin-bottom: 7.5rem;
+    gap: 1.5rem 0;
+  }
+
   &__title{
 
     &__wrapper{
@@ -16,6 +22,12 @@
       width: 7.55rem;
       height: 6.75rem;
       object-fit: cover;
+      object-position: center;
+
+      @include laptop{
+        width: 4.05rem;
+        height: 3.65rem;
+      }
     }
   }
 
@@ -25,7 +37,6 @@
 }
 
 .about{
-  //margin-top: 10rem;
 
   &__inner{
     grid-column: 4 / -1;
@@ -35,11 +46,20 @@
     margin-bottom: 2rem;
     display: flex;
     flex-wrap: wrap;
+
+    @include laptop{
+      margin-bottom: 1.5rem;
+    }
   }
 
   &__description{
     margin-bottom: 2.5rem;
     max-width: 39.15rem;
+
+    @include laptop{
+      margin-bottom: 2rem;
+
+    }
   }
 }
 
@@ -48,9 +68,13 @@
   overflow: hidden;
   padding-top: 10rem;
 
+  @include laptop{
+    padding-top: 7.5rem;
+  }
+
   &__inner{
     position: relative;
-    padding-bottom: 1.5rem;
+    padding-bottom: 2rem;
   }
 
   &__title{
@@ -75,6 +99,7 @@
     border-radius: 40px;
     border: 1px solid #FFFFFF4D;
     backdrop-filter: blur(40px);
+    background: #FFFFFF4D;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -110,5 +135,262 @@
     &__description{
       max-width: 26.5rem;
     }
+  }
+}
+
+.information{
+  margin-top: 8rem;
+
+  &__paragraph{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem 0;
+    position: sticky;
+    top: 1.5rem;
+
+    &__inner{
+      grid-column: 1 / 4;
+      height: 100%;
+    }
+
+    &__item {
+      padding: 1.5rem;
+      border-radius: 40px;
+      background-color: $c-w;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      &.active {
+        .information__paragraph__item__progress {
+          position: relative;
+          display: block;
+          visibility: initial;
+          margin-top: 4rem;
+          border: 1px solid #23222233;
+          border-radius: 20px;
+          width: 100%;
+          height: 1.2rem;
+          transition: width 2s, margin-top .5s ease;
+
+          &::before {
+            width: 100%;
+          }
+        }
+      }
+
+      &__title {
+        display: flex;
+        align-items: center;
+        gap: 0 1rem;
+
+        &__number {
+          width: 3.35rem;
+          height: 3.35rem;
+          background-color: $c-b;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: $c-w;
+        }
+
+        &__name {
+          color: $c-b;
+        }
+      }
+
+      &__progress {
+        visibility: hidden;
+        transition: margin-top .5s ease;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          background-color: $c-b;
+          width: 0; // Начальное состояние
+          height: 100%;
+          border-radius: 20px;
+          transition: width 2s, margin-top .5s ease;
+        }
+      }
+    }
+  }
+
+  &__content{
+    grid-column: 4 / -1;
+    background-color: $c-w;
+    border-radius: 60px;
+    padding: 1.5rem;
+    overflow: hidden;
+
+    .principle{
+
+      &__title{
+        grid-column: 1 / -1;
+        color: $c-b;
+      }
+
+      &__description{
+        grid-column: 1 / -1;
+        margin-top: 1rem;
+        color: $c-b;
+        opacity: .8;
+        max-width: 28.75rem;
+      }
+
+      &__list{
+        grid-column: 1 / -1;
+        margin-top: 2.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem .5rem;
+      }
+
+      &__item{
+        flex: calc(50% - .5rem);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #E3E3E3;
+        border-radius: 40px;
+        padding: 1.5rem;
+        gap: 2.5rem 0;
+        min-height: 15rem;
+
+        &__inner{
+          display: flex;
+          align-items: center;
+          gap: 0 .5rem;
+        }
+
+        &__icon{
+          width: 4.65rem;
+          height: 4.65rem;
+          border-radius: 20px;
+          background-color: #C5C5C5;
+        }
+
+        &__title{
+          max-width: 17.5rem;
+          color: $c-b;
+        }
+
+        &__description{
+          max-width: 25.5rem;
+          color: #5A5959;
+        }
+      }
+
+      .button-ui{
+        grid-column: 1 / -1;
+        width: 100%;
+        margin-top: .5rem;
+      }
+    }
+
+    .direction{
+      margin-top: 10rem;
+      display: flex;
+      flex-direction: column;
+      gap: 5rem;
+
+      &__title{
+        max-width: 42.6rem;
+        color: $c-b;
+      }
+
+      &__item{
+        padding: 2rem 0;
+        border-top: 1px solid $c-g;
+        display: flex;
+        align-items: center;
+        gap: 0 1rem;
+
+        &:last-child{
+          border-bottom: 1px solid $c-g;
+        }
+
+        &__sub-title{
+          width: 3.35rem;
+          height: 3.35rem;
+          background-color: $c-g;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-transform: uppercase;
+        }
+
+        &__title{
+          color: $c-b;
+        }
+      }
+    }
+
+    .partner{
+      margin-top: 10rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem 0;
+
+      &__title{
+        text-align: center;
+        color: $c-b;
+      }
+
+      &__list__inner{
+        //width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0 .5rem;
+        animation: tickerAnimation 2s linear infinite;
+        will-change: transform;
+      }
+
+      &__list{
+        width: fit-content;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0 .5rem;
+      }
+
+      &__item{
+        width: 16.5rem;
+        height: 12.5rem;
+        border-radius: 40px;
+        border: 1px solid $c-g;
+        padding: 1.5rem;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .5rem 0;
+
+        &__image{
+          width: 6rem;
+          height: 6rem;
+          object-fit: cover;
+          object-position: center;
+        }
+
+        &__description{
+          text-align: center;
+          color: $c-b;
+          opacity: .8;
+        }
+      }
+    }
+  }
+}
+
+@keyframes tickerAnimation {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-80%);
   }
 }

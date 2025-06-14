@@ -3,6 +3,7 @@
 import SectionHero from "~/components/Main/SectionHero.vue";
 import SectionAbout from "~/components/Main/SectionAbout.vue";
 import SectionPride from "~/components/Main/SectionPride.vue";
+import SectionInformation from "~/components/Main/SectionInformation.vue";
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import SectionPride from "~/components/Main/SectionPride.vue";
     <SectionHero />
     <SectionAbout />
     <SectionPride />
+    <SectionInformation />
   </main>
 </template>
 

@@ -31,6 +31,10 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   border-radius: 100px;
   box-sizing: border-box;
 
+  @media (max-width: 1366px) {
+    padding: .75rem 1rem;
+  }
+
   &_bg-blur{
     background: #FFFFFF4D;
     backdrop-filter: blur(30px);
