@@ -23,13 +23,14 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   </a>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .button-ui{
   width: min-content;
   white-space: nowrap;
   padding: 1rem 1.5rem;
   border-radius: 100px;
   box-sizing: border-box;
+  border: none;
 
   @media (max-width: 1366px) {
     padding: .75rem 1rem;

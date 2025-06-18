@@ -6,7 +6,7 @@ interface WpApiResponse {
 }
 
 export const WpApi = () => {
-    const apiBase: string = 'http://localhost:8000/wp-json/wp/v2'
+    const apiBase: string = 'http://bcp-api.kn-dev.ru/wp-json/wp/v2'
 
     const fetchData = async <T = WpApiResponse>(
         endpoint: string,

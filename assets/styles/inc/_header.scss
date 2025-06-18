@@ -1,3 +1,14 @@
+.background-video{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: -9;
+}
+
 .header{
   position: fixed;
   width: 100%;
@@ -80,7 +91,7 @@
   }
 }
 
-.burger{
+.burger {
   cursor: pointer;
   position: fixed;
   top: 1.5rem;
@@ -92,39 +103,61 @@
   border: 1px solid #C2C2C2;
   z-index: 9999;
   transform: translateX(calc(100% + 1.5rem));
-  transition: .3s;
+  transition: 0.3s;
 
-  &.active{
-    transform: translateX(0);
-    transition: .6s;
+  &:hover{
+
+    .burger__item{
+      opacity: .5;
+    }
   }
 
-  &__inner{
+  &.active {
+    transform: translateX(0);
+    transition: 0.6s;
+  }
+
+  &.open {
+
+    .burger__item {
+      left: calc(50% - 1rem);
+
+      &:first-child {
+        transform: rotate(45deg);
+      }
+
+      &:last-child {
+        transform: rotate(-45deg);
+      }
+    }
+  }
+
+  &__inner {
     position: relative;
     width: 100%;
     height: 100%;
   }
 
-  &__item{
+  &__item {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     width: 2rem;
     height: 2px;
     background-color: $c-b;
-    transition: .5s;
+    transform-origin: center;
+    transition: 0.5s;
 
-    &:first-child{
-      transform: translate(-50%, -5px);
-
+    &:first-child {
+      transform: translate(-50%, -6px);
     }
 
-    &:last-child{
-      transform: translate(-50%, 5px);
+    &:last-child {
+      transform: translate(-50%, 6px);
     }
   }
 }
+
 
 .burger-menu{
   position: fixed;

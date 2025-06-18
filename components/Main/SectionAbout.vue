@@ -9,7 +9,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 const { fetchData } = WpApi();
 
-const buttonFormHref = ref<string>('#form')
+const buttonFormHref = ref<string>('#tell-us')
 const buttonFormTitle = ref<string>('Обсудить проект')
 const buttonFormOption = ref<'bg-blur' | 'bg-white' | 'bg-red'>('bg-white')
 

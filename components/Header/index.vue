@@ -38,6 +38,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <img src="/assets/images/video.webp" alt="" class="background-video">
   <header :class="['header grid-12', { 'hidden': isScrolled }]">
     <nuxt-link to="/" class="header__logo">
       <svg width="240" height="68" viewBox="0 0 240 68" fill="none" xmlns="http://www.w3.org/2000/svg">

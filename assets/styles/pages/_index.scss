@@ -220,10 +220,11 @@
   }
 
   &__content{
+    position: relative;
     grid-column: 4 / -1;
     background-color: $c-w;
     border-radius: 60px;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 10rem 1.5rem;
     overflow: hidden;
 
     .principle{
@@ -342,7 +343,6 @@
       }
 
       &__list__inner{
-        //width: 100%;
         display: flex;
         flex-wrap: nowrap;
         gap: 0 .5rem;
@@ -380,6 +380,138 @@
           text-align: center;
           color: $c-b;
           opacity: .8;
+        }
+      }
+    }
+
+    .projects{
+      margin-top: 10rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem 0;
+
+      &__title{
+        color: $c-b;
+      }
+
+      &__list{
+        display: flex;
+        gap: .5rem .5rem;
+        flex-wrap: wrap;
+      }
+
+      &__item{
+        flex: calc(50% - .5rem);
+        background-color: #E3E3E3;
+        border-radius: 40px;
+        padding: 1.5rem;
+        min-height: 21rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        &__title{
+          display: flex;
+          align-items: center;
+          gap: 0 1rem;
+
+          .h3{
+            color: $c-b;
+
+          }
+
+          &__image{
+            width: 4.65rem;
+            height: 4.65rem;
+            object-fit: cover;
+            object-position: center;
+          }
+        }
+
+        &__inner{
+          display: flex;
+          flex-direction: column;
+          gap: 1rem 0;
+        }
+
+        &__description{
+          color: #5A5959;
+          max-width: 28rem;
+        }
+      }
+
+      .button-ui{
+        align-self: center;
+        min-width: 15rem;
+      }
+    }
+
+    .form{
+      margin-top: 10rem;
+      gap: 2.5rem .5rem;
+
+      &__inner{
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem 0;
+      }
+
+      &__title{
+        color: $c-b;
+        text-align: center;
+      }
+
+      &__description{
+        color: #5A5959;
+        text-align: center;
+        max-width: 23rem;
+      }
+
+      &__content{
+        position: relative;
+        grid-column: 4 / 10;
+        display: flex;
+        flex-direction: column;
+
+        &__list{
+          display: flex;
+          flex-direction: column;
+          gap: .5rem 0;
+        }
+
+        &__privacy{
+          margin-top: 1rem;
+          color: rgba(35, 34, 34, 0.6);
+
+          a{
+            display: inline-block;
+            text-decoration: underline;
+            color: rgba(35, 34, 34, 0.6);
+            transition: .5s;
+
+            &:hover{
+              color: rgba(35, 34, 34, 0.4);
+              transition: .5s;
+            }
+          }
+        }
+
+        .button-ui{
+          margin-top: 2.5rem;
+          width: 100%;
+        }
+      }
+
+      .message{
+        position: absolute;
+        bottom: -2rem;
+        left: 0;
+        color: $c-b;
+
+        &.error{
+          color: #E72121;
         }
       }
     }

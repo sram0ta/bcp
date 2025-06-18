@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import lottie from 'lottie-web'
 import { WpApi } from '~/composables/WpApi'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
+import PopupProject from "~/components/Ui/PopupProject.vue";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
 const { fetchData } = WpApi()
 
@@ -26,6 +27,14 @@ interface PartnerItem {
   description: string
 }
 
+interface ProjectItem {
+  title: string
+  description: string
+  bigDescription: string
+  siteUrl: string
+  imageUrl: string
+}
+
 // --- Принципы ---
 const principleTitle = ref('')
 const principleDescription = ref('')
@@ -41,55 +50,238 @@ const partnerTitle = ref('')
 const partnerList = ref<PartnerItem[]>([])
 const partnerImageUrls = ref<string[]>([])
 
+// --- Проекты ---
+const projectTitle = ref('')
+const allProjects = ref<ProjectItem[]>([])
+const visibleProjects = ref<ProjectItem[]>([])
+
+const projectsPerPage = 4
+let currentPage = 1
+
+const isPopupOpen = ref(false)
+const selectedProject = ref<ProjectItem | null>(null)
+
+function openPopup(project: ProjectItem) {
+  selectedProject.value = project
+  isPopupOpen.value = true
+  document.body.classList.add('fixed')
+}
+
+function closePopup() {
+  isPopupOpen.value = false
+  selectedProject.value = null
+  document.body.classList.remove('fixed')
+}
+
+// --- Форма обратной связи ---
+const formTitle = ref('')
+const formDescription = ref('')
+
 // --- Кнопка ---
-const buttonFormHref = ref<string>('#form')
+const buttonFormHref = ref<string>('#tell-us')
 const buttonFormTitle = ref<string>('Обсудить проект')
 const buttonFormOption = ref<'bg-blur' | 'bg-white' | 'bg-red'>('bg-red')
 
-// Функция для получения URL медиафайла по ID
-async function getMediaUrl(id: number): Promise<string | null> {
+// --- Получение media URL ---
+async function getMediaUrl(id: number): Promise<string> {
   try {
     const media = await fetchData(`media/${id}`, '?_fields=source_url')
-    return media?.source_url ?? null
+    return media?.source_url ?? ''
   } catch (e) {
-    console.warn(`Не удалось получить media для ID ${id}:`, e)
-    return null
+    console.warn(`Ошибка получения media для ID ${id}:`, e)
+    return ''
   }
 }
 
+// --- Подгрузка всех проектов ---
+async function loadAllProjects() {
+  const projectsResponse = await fetchData('projects', '?_fields=acf,title')
+
+  if (Array.isArray(projectsResponse)) {
+    const tempProjects: ProjectItem[] = []
+
+    for (const item of projectsResponse) {
+      const title = item.title?.rendered ?? ''
+      const description = item.acf?.small_description ?? ''
+      const bigDescription = item.acf?.big_description ?? ''
+      const siteUrl = item.acf?.link ?? ''
+      const imageId = item.acf?.image ?? null
+
+      const imageUrl = await getMediaUrl(imageId)
+      tempProjects.push({
+        title,
+        description,
+        bigDescription,
+        siteUrl,
+        imageUrl,
+      })
+    }
+
+    allProjects.value = tempProjects
+    loadNextProjects()
+  }
+}
+
+// --- Пагинация по 4 проекта ---
+function loadNextProjects() {
+  const start = (currentPage - 1) * projectsPerPage
+  const end = start + projectsPerPage
+  const nextProjects = allProjects.value.slice(start, end)
+
+  visibleProjects.value.push(...nextProjects)
+  currentPage++
+
+  ScrollTrigger.refresh();
+}
+
+const name: Ref<string> = ref('')
+const email: Ref<string> = ref('')
+const phone: Ref<string> = ref('')
+const message: Ref<string> = ref('')
+
+const statusMessage: Ref<string> = ref('')
+const statusSuccess: Ref<boolean> = ref(false)
+
+type Field = 'name' | 'email' | 'phone'
+
+const errors: Ref<Record<Field, boolean>> = ref({
+  name: false,
+  email: false,
+  phone: false,
+})
+
+const isFormSubmitted: Ref<boolean> = ref(false)
+
+function validateField(field: Field, value: string) {
+  if (isFormSubmitted.value) return
+  errors.value[field] = !value.trim()
+}
+
+watch(name, (newVal: string) => {
+  validateField('name', newVal)
+})
+watch(email, (newVal: string) => {
+  if (isFormSubmitted.value) return
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  const isValid = emailRegex.test(newVal.trim())
+  errors.value.email = !isValid
+})
+
+watch(phone, (newVal: string) => {
+  const cleaned = newVal.replace(/[^\d+]/g, '')
+  if (newVal !== cleaned) {
+    phone.value = cleaned
+  }
+
+  if (!isFormSubmitted.value) {
+    validateField('phone', cleaned)
+  }
+})
+
+function validateForm(): boolean {
+  validateField('name', name.value)
+  validateField('email', email.value)
+  validateField('phone', phone.value)
+
+  return !(errors.value.name || errors.value.email || errors.value.phone)
+}
+
+async function submitForm() {
+  statusMessage.value = ''
+  statusSuccess.value = false
+  isFormSubmitted.value = false
+
+  if (!validateForm()) {
+    statusMessage.value = 'Пожалуйста, заполните обязательные поля.'
+    statusSuccess.value = false
+    return
+  }
+
+  try {
+    const response = await fetch('https://bcp-api.kn-dev.ru/wp-json/custom/v1/send-mail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name.value,
+        email: email.value,
+        phone: phone.value,
+        message: message.value,
+      }),
+    })
+
+    const data: { success: boolean; message: string } = await response.json()
+
+    if (response.ok && data.success) {
+      statusMessage.value = data.message
+      statusSuccess.value = true
+
+      // Сброс формы
+      name.value = ''
+      email.value = ''
+      phone.value = ''
+      message.value = ''
+
+      errors.value = {
+        name: false,
+        email: false,
+        phone: false,
+      }
+
+      isFormSubmitted.value = true // ✅ Блокировка повторной валидации после очистки
+
+      // Через 300 мс сбрасываем флаг, чтобы не мешать новой валидации
+      setTimeout(() => {
+        isFormSubmitted.value = false
+      }, 300)
+
+    } else {
+      statusMessage.value = data.message || 'Ошибка отправки'
+      statusSuccess.value = false
+    }
+  } catch (e) {
+    statusMessage.value = 'Ошибка сети. Попробуйте позже.'
+    statusSuccess.value = false
+  }
+}
+
+
+
+// --- onMounted ---
 onMounted(async () => {
   try {
     const response = await fetchData('pages/16', '?_fields=acf')
 
     if (response?.acf) {
-      // Заполняем данные по принципам
+      // --- Принципы ---
       principleTitle.value = response.acf.principle__title ?? ''
       principleDescription.value = response.acf.principle__description ?? ''
       principleList.value = response.acf.repeater_principle ?? []
 
-      // Заполняем данные по направлениям
+      // --- Направления ---
       directionTitle.value = response.acf.direction_title ?? ''
       directionList.value = response.acf.repeater_direction ?? []
 
-      // Заполняем данные по направлениям
+      // --- Партнеры ---
       partnerTitle.value = response.acf.partner_title ?? ''
       partnerList.value = response.acf.repeater_partner ?? []
 
-      const imageUrls = await Promise.all(
-          partnerList.value.map(item => getMediaUrl(item.image))
+      const partnerUrls = await Promise.all(
+          partnerList.value.map(p => getMediaUrl(p.image))
       )
-      partnerImageUrls.value = imageUrls.map(url => url ?? '')
+      partnerImageUrls.value = partnerUrls
 
-      // lottie
-      const urls = await Promise.all(
-          principleList.value.map(item => getMediaUrl(item.icon))
+      // --- Анимации (Lottie) ---
+      const iconUrls = await Promise.all(
+          principleList.value.map(p => getMediaUrl(p.icon))
       )
 
       await nextTick()
 
-      // Инициализируем lottie-анимации
       lottieRefs.value.forEach((el, i) => {
-        const url = urls[i]
+        const url = iconUrls[i]
         if (url && el) {
           lottie.loadAnimation({
             container: el,
@@ -101,10 +293,17 @@ onMounted(async () => {
         }
       })
 
+      // --- ScrollTrigger ---
       await nextTick()
 
       const sections = document.querySelectorAll('.information__content > div')
       const menuItems = document.querySelectorAll('.information__paragraph__item')
+
+      function setActive(index: number) {
+        menuItems.forEach((item, i) => {
+          item.classList.toggle('active', i === index)
+        })
+      }
 
       sections.forEach((section, index) => {
         ScrollTrigger.create({
@@ -117,19 +316,23 @@ onMounted(async () => {
         })
       })
 
-      function setActive(index: number) {
-        menuItems.forEach((item, i) => {
-          item.classList.toggle('active', i === index)
-        })
-      }
+      // --- Проекты ---
+      projectTitle.value = response.acf.project__title ?? ''
+      await loadAllProjects()
+
+      formTitle.value = response.acf.form_title ?? ''
+      formDescription.value = response.acf.form_description ?? ''
+
+      ScrollTrigger.refresh();
     } else {
-      console.warn('Неполные данные:', response)
+      console.warn('Неполные данные страницы:', response)
     }
   } catch (error) {
-    console.error('Ошибка при загрузке:', error)
+    console.error('Ошибка при загрузке данных:', error)
   }
 })
 </script>
+
 
 <template>
   <div class="container information grid-12">
@@ -153,6 +356,20 @@ onMounted(async () => {
           <div class="information__paragraph__item__title">
             <div class="information__paragraph__item__title__number p2">03</div>
             <div class="information__paragraph__item__title__name p2">{{ partnerTitle }}</div>
+          </div>
+          <div class="information__paragraph__item__progress"></div>
+        </div>
+        <div class="information__paragraph__item">
+          <div class="information__paragraph__item__title">
+            <div class="information__paragraph__item__title__number p2">04</div>
+            <div class="information__paragraph__item__title__name p2">{{ projectTitle }}</div>
+          </div>
+          <div class="information__paragraph__item__progress"></div>
+        </div>
+        <div class="information__paragraph__item">
+          <div class="information__paragraph__item__title">
+            <div class="information__paragraph__item__title__number p2">05</div>
+            <div class="information__paragraph__item__title__name p2">Контакты</div>
           </div>
           <div class="information__paragraph__item__progress"></div>
         </div>
@@ -213,8 +430,80 @@ onMounted(async () => {
           </div>
         </div>
       </div>
+      <div class="projects">
+        <h2 class="projects__title h2">{{ projectTitle }}</h2>
+        <div class="projects__list">
+          <div class="projects__list">
+            <div
+                class="projects__item"
+                v-for="(item, index) in visibleProjects"
+                :key="index"
+            >
+              <div class="projects__item__title">
+                <img :src="item.imageUrl" class="projects__item__title__image" loading="lazy" />
+                <p class="h3">{{ item.title }}</p>
+              </div>
+              <div class="projects__item__inner">
+                <div class="projects__item__description p2">{{ item.description }}</div>
+                <button
+                    class="projects__item__button button-underline"
+                    @click="openPopup(item)"
+                >
+                  <span class="button-underline__inner p2">
+                    <span class="button-underline__title">Подробнее</span>
+                    <span class="button-underline__title">Подробнее</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <button
+          class="button-ui button-ui_bg-red"
+          @click="loadNextProjects"
+          v-if="visibleProjects.length < allProjects.length"
+        >
+          <span class="button-ui__inner p2">
+            <span class="button-ui__title">Загрузить ещё</span>
+            <span class="button-ui__title">Загрузить ещё</span>
+          </span>
+        </button>
+      </div>
+      <div class="form grid-12">
+        <div class="anchor" id="tell-us"></div>
+        <div class="form__inner">
+          <div class="form__title h2">{{ formTitle }}</div>
+          <div class="form__description p2">{{ formDescription }}</div>
+        </div>
+        <div class="form__content">
+          <div class="form__content__list">
+            <input v-model="name" :class="['input p2', { error: errors.name }]" placeholder="Ваше имя*" required />
+            <input v-model="email" :class="['input p2', { error: errors.email }]" placeholder="Email*" required />
+            <input v-model="phone" :class="['input p2', { error: errors.phone }]" placeholder="Ваш номер телефона*" required />
+            <textarea v-model="message" class="input p2" placeholder="Сообщение"></textarea>
+          </div>
+          <div class="form__content__privacy p2">
+            Отправляя заявку вы соглашаетесь на обработку <a href="#" class="p2">персональных данных.</a>
+          </div>
+          <button class="button-ui button-ui_bg-red" @click.prevent="submitForm">
+      <span class="button-ui__inner p2">
+        <span class="button-ui__title">Отправить</span>
+        <span class="button-ui__title">Отправить</span>
+      </span>
+          </button>
+          <p v-if="statusMessage" :class="{'success': statusSuccess, 'error': !statusSuccess}" class="p2 message">
+            {{ statusMessage }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
+  <PopupProject
+      v-if="isPopupOpen"
+      :project="selectedProject"
+      @close="closePopup"
+  />
 </template>
 
 <style scoped>
