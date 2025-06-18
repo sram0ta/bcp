@@ -12,7 +12,7 @@ interface SectionHero {
 
 import {ref, onMounted, nextTick} from 'vue'
 import { WpApi } from '~/composables/WpApi'
-import { BlockAnimation } from '~/composables/animation/BlockAnimation'
+import { BlockAnimation, FadeInAnimation } from '~/composables/animation/BlockAnimation'
 import { gsap } from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import SplitText from 'gsap/SplitText'
@@ -55,7 +55,10 @@ onMounted(async () => {
       await nextTick()
       ScrollTrigger.refresh()
 
-      BlockAnimation('.animate-title')
+      const tl = gsap.timeline()
+
+      await BlockAnimation('.animate-title', tl)
+      FadeInAnimation('.animate-opacity', tl)
     } else {
       console.warn('Неполные данные:', response);
     }
@@ -84,13 +87,15 @@ const titleWords = computed(() => {
       </span>
       <span class="hero__title">{{ titleWords[2] }}</span>
     </h1>
-    <div class="hero__description p1">{{ heroDescription }}</div>
-    <ui-button
-      :href="heroButtonHref"
-      :title="heroButtonTitle"
-      :option="heroButtonOption"
-      :target="heroButtonTarget"
-    />
+    <div class="hero__description p1 animate-opacity">{{ heroDescription }}</div>
+    <div class="button-container animate-opacity">
+      <ui-button
+        :href="heroButtonHref"
+        :title="heroButtonTitle"
+        :option="heroButtonOption"
+        :target="heroButtonTarget"
+      />
+    </div>
   </div>
 </template>
 
