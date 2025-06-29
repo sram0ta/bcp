@@ -1,12 +1,9 @@
-import { ref} from 'vue'
-import type { Ref } from 'vue'
-
 interface WpApiResponse {
     [key: string]: any
 }
 
 export const WpApi = () => {
-    const apiBase: string = 'http://bcp-api.kn-dev.ru/wp-json/wp/v2'
+    const apiBase: string = 'https://api.b-dp.ru/wp-json/wp/v2'
 
     const fetchData = async <T = WpApiResponse>(
         endpoint: string,

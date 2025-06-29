@@ -3,7 +3,3 @@
   <slot />
   <Footer />
 </template>
-
-<style >
-
-</style>

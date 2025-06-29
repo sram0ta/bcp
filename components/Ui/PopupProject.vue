@@ -70,14 +70,31 @@ const emit = defineEmits(['close'])
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 20px;
+      border-radius: 1rem;
+
+      @media (max-width: 1440px) {
+        margin-top: 1rem;
+        justify-self: flex-end;
+        width: 4rem;
+        height: 4rem;
+      }
+
+      svg{
+        width: 1.6rem;
+        height: 1.6rem;
+
+        @media (max-width: 1440px) {
+          width: 1.4rem;
+          height: 1.4rem;
+        }
+      }
     }
 
     &__content{
       grid-column: 6 / -1;
       background-color: #F2F2F2;
       margin: 2rem 0;
-      border-radius: 40px;
+      border-radius: 2rem;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
@@ -85,6 +102,12 @@ const emit = defineEmits(['close'])
       overflow: auto;
       -ms-overflow-style: none;
       scrollbar-width: none;
+
+      @media (max-width: 1440px) {
+        margin: 1rem 0;
+        border-radius: 1.5rem;
+        gap: 2rem 0;
+      }
 
       &::-webkit-scrollbar {
         display: none;
@@ -101,6 +124,11 @@ const emit = defineEmits(['close'])
           object-fit: cover;
           object-position: center;
           border-radius: 20px;
+
+          @media (max-width: 1440px) {
+            width: 4rem;
+            height: 4rem;
+          }
         }
 
         .h4{
@@ -111,6 +139,10 @@ const emit = defineEmits(['close'])
       &__description{
         color: #232222;
         max-width: 31.1rem;
+
+        @media (max-width: 1440px) {
+          max-width: 28.2rem;
+        }
       }
 
       &__sub-title{

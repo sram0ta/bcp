@@ -3,6 +3,9 @@ import { ref, onMounted, nextTick } from 'vue'
 import prideScrollAnimation from '~/composables/animation/pride'
 import { WpApi } from '~/composables/WpApi'
 import ScrollTrigger from 'gsap/ScrollTrigger'
+import {useAnimations} from '~/composables/animation/BlockAnimation'
+const blockRef = ref<HTMLElement | null>(null)
+const { blockAnimation, fadeInAnimation } = useAnimations()
 
 const { fetchData } = WpApi()
 
@@ -37,6 +40,12 @@ onMounted(async () => {
     }
 
     ScrollTrigger.refresh()
+
+    await nextTick()
+    ScrollTrigger.refresh()
+
+    await blockAnimation(blockRef.value, '.animate-title')
+    fadeInAnimation(blockRef.value, '.animate-opacity')
   } else {
     console.warn('Неполные данные в pride секции', response)
   }
@@ -44,10 +53,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container pride">
+  <div class="container pride" ref="blockRef">
     <div class="pride__inner" ref="prideRef">
-      <h2 class="pride__title p3">{{ prideTitle }}</h2>
-      <p class="pride__description p1">{{ prideDescription }}</p>
+      <h2 class="pride__title p3 animate-title">{{ prideTitle }}</h2>
+      <p class="pride__description p1 animate-opacity">{{ prideDescription }}</p>
       <div class="pride__list">
         <div
             v-for="(item, index) in prideItems"

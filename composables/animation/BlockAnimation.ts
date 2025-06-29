@@ -4,67 +4,178 @@ import SplitText from 'gsap/SplitText'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 
-/**
- * Анимация заголовков с построчным появлением
- */
-export function BlockAnimation(selector = '.animate-title', timeline?: gsap.core.Timeline): Promise<void> {
-  return new Promise((resolve) => {
-    const title = document.querySelector(selector)
-    if (!title) return resolve()
+export function useAnimations() {
+  /**
+   * Универсальная анимация текста с построчным появлением
+   * с привязкой к появлению в области видимости
+   */
+  const blockAnimation = async (
+      container: HTMLElement | null,
+      selector = '.animate-title',
+      timeline?: gsap.core.Timeline
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      if (!container) return resolve()
 
-    const allLines: HTMLElement[] = []
+      const elements = container.querySelectorAll(selector)
+      if (!elements.length) return resolve()
 
-    gsap.utils.toArray<HTMLElement>(title.querySelectorAll('span')).forEach((el) => {
-      const split = new SplitText(el, {
-        type: 'lines',
-        linesClass: 'line-temp'
+      const animationData = Array.from(elements).map(element => {
+        const allLines: HTMLElement[] = []
+
+        if (element.querySelector('span')) {
+          gsap.utils.toArray<HTMLElement>(element.querySelectorAll('span')).forEach((el) => {
+            const split = new SplitText(el, {
+              type: 'lines',
+              linesClass: 'line-temp'
+            })
+
+            split.lines.forEach((line) => {
+              const span = document.createElement('span')
+              span.className = 'line'
+              span.style.display = 'block'
+              span.innerHTML = line.innerHTML
+              line.replaceWith(span)
+              allLines.push(span)
+            })
+          })
+        } else {
+          const split = new SplitText(element, {
+            type: 'lines',
+            linesClass: 'line-temp'
+          })
+
+          split.lines.forEach((line) => {
+            const span = document.createElement('span')
+            span.className = 'line'
+            span.style.display = 'block'
+            span.innerHTML = line.innerHTML
+            line.replaceWith(span)
+            allLines.push(span)
+          })
+        }
+
+        gsap.set(allLines, {
+          opacity: 0,
+          y: 100
+        })
+
+        return { element, allLines }
       })
 
-      split.lines.forEach((line) => {
-        const span = document.createElement('span')
-        span.className = 'line'
-        span.style.display = 'block'
-        span.innerHTML = line.innerHTML
-        line.replaceWith(span)
-        allLines.push(span)
+      let completedAnimations = 0
+      const totalElements = animationData.length
+
+      animationData.forEach(({ element, allLines }) => {
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 90%",
+          onEnter: () => {
+            const elementTl = timeline ?? gsap.timeline()
+            elementTl.to(allLines, {
+              duration: 0.5,
+              opacity: 1,
+              y: 0,
+              ease: 'linear',
+              stagger: 0.15,
+            })
+
+            elementTl.call(() => {
+              completedAnimations++
+              if (completedAnimations === totalElements) {
+                resolve()
+              }
+            })
+          },
+          once: true
+        })
+      })
+    })
+  }
+
+  /**
+   * Fade-in анимация с привязкой к появлению в области видимости
+   */
+  const fadeInAnimation = (
+      container: HTMLElement | null,
+      selector = '.animate-opacity',
+      timeline?: gsap.core.Timeline
+  ) => {
+    if (!container) return timeline ?? gsap.timeline()
+
+    const elements = gsap.utils.toArray<HTMLElement>(container.querySelectorAll(selector))
+    gsap.set(elements, { opacity: 0, y: 5 })
+
+    const masterTl = timeline ?? gsap.timeline()
+
+    elements.forEach((el) => {
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top 90%",
+        onEnter: () => {
+          const elementTl = gsap.timeline()
+          elementTl.to(el, {
+            duration: 0.3,
+            opacity: 1,
+            y: 0,
+            ease: 'linear'
+          })
+          masterTl.add(elementTl, '+=0.1')
+        },
+        once: true
       })
     })
 
-    // Если передан timeline — добавляем туда, иначе обычная анимация
-    const tl = timeline ?? gsap.timeline()
+    return masterTl
+  }
 
-    tl.from(allLines, {
-      duration: .5,
-      opacity: 0,
-      y: 100,
-      ease: 'linear',
-      stagger: 0.15,
+  /**
+   * Анимация по направлению скролла:
+   * элементы приподнимаются при скролле вниз
+   * и опускаются при скролле вверх
+   */
+  const scrollDirectionShiftAnimation = (
+      container: HTMLElement | null,
+      selector = '.animate-shift',
+      amount = 200
+  ) => {
+    if (!container) return
+
+    // Добавим стили на случай, если контейнер еще не скроллится
+    if (getComputedStyle(container).overflowY === 'visible') {
+      container.style.overflowY = 'auto'
+    }
+    if (!container.style.height) {
+      container.style.height = '100vh' // или задайте вручную нужную высоту
+    }
+
+    const elements = gsap.utils.toArray<HTMLElement>(container.querySelectorAll(selector))
+
+    elements.forEach(el => {
+      gsap.fromTo(
+          el,
+          { y: 0 },
+          {
+            y: -amount,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el,
+              scroller: container, // используем контейнер как область скролла
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            }
+          }
+      )
     })
+  }
 
-    tl.call(() => resolve())
-  })
-}
 
-/**
- * Fade-in анимация для остальных блоков
- */
-export function FadeInAnimation(selector = '.animate-opacity', timeline?: gsap.core.Timeline) {
-  const elements = gsap.utils.toArray<HTMLElement>(selector)
 
-  const tl = timeline ?? gsap.timeline()
 
-  // Установим стартовое состояние
-  gsap.set(elements, { opacity: 0, y: 5 })
-
-  // Анимация к видимому состоянию
-  elements.forEach((el) => {
-    tl.to(el, {
-      duration: 0.3,
-      opacity: 1,
-      y: 0,
-      ease: 'linear',
-    }, '+=0.1')
-  })
-
-  return tl
+  return {
+    blockAnimation,
+    fadeInAnimation,
+    scrollDirectionShiftAnimation,
+  }
 }

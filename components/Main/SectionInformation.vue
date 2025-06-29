@@ -2,10 +2,15 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import lottie from 'lottie-web'
 import { WpApi } from '~/composables/WpApi'
-import gsap from 'gsap'
+import { gsap } from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import PopupProject from "~/components/Ui/PopupProject.vue";
-
+import {useAnimations} from '~/composables/animation/BlockAnimation'
+const blockPrincipleRef = ref<HTMLElement | null>(null)
+const blockDirectionRef = ref<HTMLElement | null>(null)
+const blockPartnerRef = ref<HTMLElement | null>(null)
+const blockProjectsRef = ref<HTMLElement | null>(null)
+const { blockAnimation, fadeInAnimation, scrollDirectionShiftAnimation } = useAnimations()
 gsap.registerPlugin(ScrollTrigger)
 
 const { fetchData } = WpApi()
@@ -129,7 +134,7 @@ function loadNextProjects() {
   const nextProjects = allProjects.value.slice(start, end)
 
   visibleProjects.value.push(...nextProjects)
-  currentPage++
+  currentPage++;
 
   ScrollTrigger.refresh();
 }
@@ -230,9 +235,8 @@ async function submitForm() {
         phone: false,
       }
 
-      isFormSubmitted.value = true // ✅ Блокировка повторной валидации после очистки
+      isFormSubmitted.value = true
 
-      // Через 300 мс сбрасываем флаг, чтобы не мешать новой валидации
       setTimeout(() => {
         isFormSubmitted.value = false
       }, 300)
@@ -247,9 +251,6 @@ async function submitForm() {
   }
 }
 
-
-
-// --- onMounted ---
 onMounted(async () => {
   try {
     const response = await fetchData('pages/16', '?_fields=acf')
@@ -293,7 +294,6 @@ onMounted(async () => {
         }
       })
 
-      // --- ScrollTrigger ---
       await nextTick()
 
       const sections = document.querySelectorAll('.information__content > div')
@@ -324,6 +324,24 @@ onMounted(async () => {
       formDescription.value = response.acf.form_description ?? ''
 
       ScrollTrigger.refresh();
+
+      await nextTick()
+      ScrollTrigger.refresh()
+
+      scrollDirectionShiftAnimation(document.body, '.animate-shift')
+
+      await blockAnimation(blockPrincipleRef.value, '.animate-title')
+      fadeInAnimation(blockPrincipleRef.value, '.animate-opacity')
+
+      await blockAnimation(blockDirectionRef.value, '.animate-title')
+      fadeInAnimation(blockDirectionRef.value, '.animate-opacity')
+
+      await blockAnimation(blockPartnerRef.value, '.animate-title')
+      fadeInAnimation(blockPartnerRef.value, '.animate-opacity')
+
+      await blockAnimation(blockProjectsRef.value, '.animate-title')
+      fadeInAnimation(blockProjectsRef.value, '.animate-opacity')
+
     } else {
       console.warn('Неполные данные страницы:', response)
     }
@@ -375,126 +393,131 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-    <div class="information__content">
-      <div class="principle grid-12">
-        <h2 class="principle__title h2">{{ principleTitle }}</h2>
-        <p class="principle__description p2">{{ principleDescription }}</p>
-        <div class="principle__list">
-          <div
-              class="principle__item"
-              v-for="(item, index) in principleList"
-              :key="index"
-          >
-            <div class="principle__item__inner">
-              <div
-                  class="principle__item__icon"
-                  :ref="el => lottieRefs[index] = el as HTMLElement"
-              ></div>
-              <h3 class="principle__item__title h3">{{ item.title }}</h3>
-            </div>
-            <p class="principle__item__description p2">{{ item.description }}</p>
-          </div>
-        </div>
-        <ui-button
-            :href="buttonFormHref"
-            :title="buttonFormTitle"
-            :option="buttonFormOption"
-        />
-      </div>
-      <div class="direction">
-        <h2 class="direction__title h2">{{ directionTitle }} ({{ directionList.length }})</h2>
-        <div class="direction__list">
-          <div
-              class="direction__item"
-              v-for="(item, index) in directionList" :key="index"
-          >
-            <div class="direction__item__sub-title p2">{{ item.sub_title }}</div>
-            <h3 class="direction__item__title h3">{{ item.title }}</h3>
-          </div>
-        </div>
-      </div>
-      <div class="partner">
-        <h2 class="partner__title h2">{{ partnerTitle }}</h2>
-        <div class="partner__list__inner">
-          <div class="partner__list">
-            <div class="partner__item" v-for="(item, index) in partnerList" :key="index">
-              <img :src="partnerImageUrls[index]" alt="" class="partner__item__image" loading="lazy">
-              <p class="partner__item__description p2">{{ item.description }}</p>
-            </div>
-          </div>
-          <div class="partner__list">
-            <div class="partner__item" v-for="(item, index) in partnerList" :key="index">
-              <img :src="partnerImageUrls[index]" alt="" class="partner__item__image" loading="lazy">
-              <p class="partner__item__description p2">{{ item.description }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="projects">
-        <h2 class="projects__title h2">{{ projectTitle }}</h2>
-        <div class="projects__list">
-          <div class="projects__list">
+    <div class="information__content__inner">
+      <div class="main-image-3 animate-shift"></div>
+      <div class="information__content">
+        <div class="principle grid-12" ref="blockPrincipleRef">
+          <h2 class="principle__title h2 animate-title">{{ principleTitle }}</h2>
+          <p class="principle__description p2 animate-opacity">{{ principleDescription }}</p>
+          <div class="principle__list">
             <div
-                class="projects__item"
-                v-for="(item, index) in visibleProjects"
+                class="principle__item animate-opacity"
+                v-for="(item, index) in principleList"
                 :key="index"
             >
-              <div class="projects__item__title">
-                <img :src="item.imageUrl" class="projects__item__title__image" loading="lazy" />
-                <p class="h3">{{ item.title }}</p>
+              <div class="principle__item__inner">
+                <div
+                    class="principle__item__icon"
+                    :ref="el => lottieRefs[index] = el as HTMLElement"
+                ></div>
+                <h3 class="principle__item__title h3">{{ item.title }}</h3>
               </div>
-              <div class="projects__item__inner">
-                <div class="projects__item__description p2">{{ item.description }}</div>
-                <button
-                    class="projects__item__button button-underline"
-                    @click="openPopup(item)"
-                >
+              <p class="principle__item__description p2">{{ item.description }}</p>
+            </div>
+          </div>
+          <div class="principle__button animate-opacity">
+            <ui-button
+                :href="buttonFormHref"
+                :title="buttonFormTitle"
+                :option="buttonFormOption"
+            />
+          </div>
+        </div>
+        <div class="direction" ref="blockDirectionRef">
+          <h2 class="direction__title h2">{{ directionTitle }} ({{ directionList.length }})</h2>
+          <div class="direction__list">
+            <div
+                class="direction__item animate-opacity"
+                v-for="(item, index) in directionList" :key="index"
+            >
+              <div class="direction__item__sub-title p2">{{ item.sub_title }}</div>
+              <h3 class="direction__item__title h3">{{ item.title }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="partner" ref="blockPartnerRef">
+          <h2 class="partner__title h2 animate-title">{{ partnerTitle }}</h2>
+          <div class="partner__list__inner">
+            <div class="partner__list">
+              <div class="partner__item" v-for="(item, index) in partnerList" :key="index">
+                <img :src="partnerImageUrls[index]" alt="" class="partner__item__image" loading="lazy">
+                <p class="partner__item__description p2">{{ item.description }}</p>
+              </div>
+            </div>
+            <div class="partner__list">
+              <div class="partner__item" v-for="(item, index) in partnerList" :key="index">
+                <img :src="partnerImageUrls[index]" alt="" class="partner__item__image" loading="lazy">
+                <p class="partner__item__description p2">{{ item.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="projects" ref="blockProjectsRef">
+          <h2 class="projects__title h2 animate-title">{{ projectTitle }}</h2>
+          <div class="projects__list">
+            <div class="projects__list">
+              <div
+                  class="projects__item animate-opacity"
+                  v-for="(item, index) in visibleProjects"
+                  :key="index"
+              >
+                <div class="projects__item__title">
+                  <img :src="item.imageUrl" class="projects__item__title__image" loading="lazy" />
+                  <p class="h3">{{ item.title }}</p>
+                </div>
+                <div class="projects__item__inner">
+                  <div class="projects__item__description p2">{{ item.description }}</div>
+                  <button
+                      class="projects__item__button button-underline"
+                      @click="openPopup(item)"
+                  >
                   <span class="button-underline__inner p2">
                     <span class="button-underline__title">Подробнее</span>
                     <span class="button-underline__title">Подробнее</span>
                   </span>
-                </button>
+                  </button>
+                </div>
               </div>
-            </div>
 
+            </div>
           </div>
-        </div>
-        <button
-          class="button-ui button-ui_bg-red"
-          @click="loadNextProjects"
-          v-if="visibleProjects.length < allProjects.length"
-        >
+          <button
+              class="button-ui button-ui_bg-red"
+              @click="loadNextProjects"
+              v-if="visibleProjects.length < allProjects.length"
+          >
           <span class="button-ui__inner p2">
             <span class="button-ui__title">Загрузить ещё</span>
             <span class="button-ui__title">Загрузить ещё</span>
           </span>
-        </button>
-      </div>
-      <div class="form grid-12">
-        <div class="anchor" id="tell-us"></div>
-        <div class="form__inner">
-          <div class="form__title h2">{{ formTitle }}</div>
-          <div class="form__description p2">{{ formDescription }}</div>
+          </button>
         </div>
-        <div class="form__content">
-          <div class="form__content__list">
-            <input v-model="name" :class="['input p2', { error: errors.name }]" placeholder="Ваше имя*" required />
-            <input v-model="email" :class="['input p2', { error: errors.email }]" placeholder="Email*" required />
-            <input v-model="phone" :class="['input p2', { error: errors.phone }]" placeholder="Ваш номер телефона*" required />
-            <textarea v-model="message" class="input p2" placeholder="Сообщение"></textarea>
+        <div class="form grid-12">
+          <div class="anchor" id="tell-us"></div>
+          <div class="form__inner">
+            <div class="form__title h2">{{ formTitle }}</div>
+            <div class="form__description p2">{{ formDescription }}</div>
           </div>
-          <div class="form__content__privacy p2">
-            Отправляя заявку вы соглашаетесь на обработку <a href="#" class="p2">персональных данных.</a>
-          </div>
-          <button class="button-ui button-ui_bg-red" @click.prevent="submitForm">
+          <div class="form__content">
+            <div class="form__content__list">
+              <input v-model="name" :class="['input p2', { error: errors.name }]" placeholder="Ваше имя*" required />
+              <input v-model="email" :class="['input p2', { error: errors.email }]" placeholder="Email*" required />
+              <input v-model="phone" :class="['input p2', { error: errors.phone }]" placeholder="Ваш номер телефона*" required />
+              <textarea v-model="message" class="input p2" placeholder="Сообщение"></textarea>
+            </div>
+            <div class="form__content__privacy p2">
+              Отправляя заявку вы соглашаетесь на обработку <a href="#" class="p2">персональных данных.</a>
+            </div>
+            <button class="button-ui button-ui_bg-red" @click.prevent="submitForm">
       <span class="button-ui__inner p2">
         <span class="button-ui__title">Отправить</span>
         <span class="button-ui__title">Отправить</span>
       </span>
-          </button>
-          <p v-if="statusMessage" :class="{'success': statusSuccess, 'error': !statusSuccess}" class="p2 message">
-            {{ statusMessage }}
-          </p>
+            </button>
+            <p v-if="statusMessage" :class="{'success': statusSuccess, 'error': !statusSuccess}" class="p2 message">
+              {{ statusMessage }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -507,5 +530,18 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
+.main-image-3{
+  position: absolute;
+  top: 40rem;
+  right: 0;
+  width: 70rem;
+  height: 52.5rem;
+  background-image: url('@/assets/images/box3.png');
+  background-repeat: no-repeat;
+  background-position: right;
+  background-size: contain;
+  mix-blend-mode: multiply;
+  opacity: 1;
+  z-index: 0;
+}
 </style>

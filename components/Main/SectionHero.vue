@@ -12,7 +12,10 @@ interface SectionHero {
 
 import {ref, onMounted, nextTick} from 'vue'
 import { WpApi } from '~/composables/WpApi'
-import { BlockAnimation, FadeInAnimation } from '~/composables/animation/BlockAnimation'
+import {useAnimations} from '~/composables/animation/BlockAnimation'
+const blockRef = ref<HTMLElement | null>(null)
+const { blockAnimation, fadeInAnimation } = useAnimations()
+
 import { gsap } from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import SplitText from 'gsap/SplitText'
@@ -55,10 +58,8 @@ onMounted(async () => {
       await nextTick()
       ScrollTrigger.refresh()
 
-      const tl = gsap.timeline()
-
-      await BlockAnimation('.animate-title', tl)
-      FadeInAnimation('.animate-opacity', tl)
+      await blockAnimation(blockRef.value, '.animate-title')
+      fadeInAnimation(blockRef.value, '.animate-opacity')
     } else {
       console.warn('Неполные данные:', response);
     }
@@ -74,18 +75,16 @@ const titleWords = computed(() => {
 </script>
 
 <template>
-  <div class="container hero">
+  <div class="container hero" ref="blockRef">
     <h1 class="hero__title__inner h1 animate-title">
-      <span class="hero__title">{{ titleWords[0] }}</span>
-      <span class="hero__title__wrapper">
-        <img
-            :src="heroIconUrl"
-            :alt="heroIconAlt"
-            class="hero__title__icon"
-        />
-        <span class="hero__title">{{ titleWords[1] }}</span>
-      </span>
-      <span class="hero__title">{{ titleWords[2] }}</span>
+      {{ titleWords[0] }}
+        {{ titleWords[1] }}
+      <img
+          :src="heroIconUrl"
+          :alt="heroIconAlt"
+          class="hero__title__icon"
+      />
+      {{ titleWords[2] }}
     </h1>
     <div class="hero__description p1 animate-opacity">{{ heroDescription }}</div>
     <div class="button-container animate-opacity">

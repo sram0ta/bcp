@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import {ref, onMounted, onBeforeUnmount} from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import lottie from 'lottie-web'
+import animationData from '@/assets/images/preloader.json'
 
-const headerButtons = [
-  { href: '#about-us', title: 'О нас', option: 'bg-blur' },
-  { href: '#directions', title: 'Направления', option: 'bg-blur' },
-  { href: '#tell-us', title: 'Обсудить проект', option: 'bg-white' },
-]
-
+// Прочее из твоего кода
 const isScrolled = ref(false)
 let lastScrollY = 0
 
@@ -17,19 +14,43 @@ const handleScroll = () => {
 }
 
 const isBurgerActive = ref(false)
-
 function openBurger() {
   isBurgerActive.value = !isBurgerActive.value
 }
 
-// Кнопка обратной связи
+const headerButtons = [
+  { href: '#about-us', title: 'О нас', option: 'bg-blur' },
+  { href: '#directions', title: 'Направления', option: 'bg-blur' },
+  { href: '#tell-us', title: 'Обсудить проект', option: 'bg-white' },
+]
+
 const buttonFormHref = ref<string>('#form')
 const buttonFormTitle = ref<string>('Обсудить проект')
 const buttonFormOption = ref<'bg-blur' | 'bg-white' | 'bg-red'>('bg-red')
 
+// 🔹 Прелоадер
+const preloaderRef = ref<HTMLElement | null>(null)
+const preloaderLogoRef = ref<HTMLElement | null>(null)
 
-onMounted(async () => {
+onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+
+  if (preloaderLogoRef.value && preloaderRef.value) {
+    const anim = lottie.loadAnimation({
+      container: preloaderLogoRef.value,
+      renderer: 'svg',
+      loop: false,
+      autoplay: true,
+      animationData,
+      rendererSettings: {
+        preserveAspectRatio: 'xMidYMid meet',
+      },
+    })
+
+    anim.addEventListener('complete', () => {
+      preloaderRef.value?.classList.add('preloader__done')
+    })
+  }
 })
 
 onBeforeUnmount(() => {
@@ -37,8 +58,13 @@ onBeforeUnmount(() => {
 })
 </script>
 
+
 <template>
   <img src="/assets/images/video.webp" alt="" class="background-video">
+  <div class="preloader" ref="preloaderRef">
+    <img src="/assets/images/video.webp" alt="" class="preloader__background" />
+    <div class="preloader__logo" ref="preloaderLogoRef"></div>
+  </div>
   <header :class="['header grid-12', { 'hidden': isScrolled }]">
     <nuxt-link to="/" class="header__logo">
       <svg width="240" height="68" viewBox="0 0 240 68" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -50,10 +76,7 @@ onBeforeUnmount(() => {
     </nuxt-link>
     <div class="header__info">
       <a href="tel:+74950188889" class="header__info__link p2">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="14" height="14" rx="3" fill="#F2F2F2"/>
-          <path d="M7 2V10M7 10L10 7M7 10L4 7M4 11H10" stroke="#3C3C3C"/>
-        </svg>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="12" height="12" rx="2" fill="#F2F2F2"></rect></svg>
         +7 (495) 018-88-89
       </a>
       <a href="#" class="header__info__link p2">

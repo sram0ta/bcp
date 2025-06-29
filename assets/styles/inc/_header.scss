@@ -6,7 +6,45 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  z-index: -9;
+  z-index: 0;
+}
+
+.preloader{
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999999999;
+  pointer-events: all;
+  visibility: visible;
+  opacity: 1;
+  transition: .5s;
+
+  &__background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  &__logo{
+    width: 27.65rem;
+    height: 7.75rem;
+  }
+
+  &__done{
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: .5s;
+  }
 }
 
 .header{
@@ -98,12 +136,18 @@
   right: 1.5rem;
   width: 4.65rem;
   height: 4.65rem;
-  border-radius: 20px;
+  border-radius: 1rem;
   background-color: $c-w;
   border: 1px solid #C2C2C2;
   z-index: 9999;
   transform: translateX(calc(100% + 1.5rem));
   transition: 0.3s;
+
+  @include laptop {
+    top: .5rem;
+    right: 1rem;
+    transform: translateX(calc(100% + 1rem));
+  }
 
   &:hover{
 
@@ -171,7 +215,7 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 5rem 0;
-  border-radius: 30px;
+  border-radius: 1.5rem;
   padding: 1.5rem;
   opacity: 0;
   visibility: hidden;
@@ -184,6 +228,13 @@
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  @include laptop {
+    top: 6rem;
+    right: 1rem;
+    width: 24.5rem;
+    height: calc(100% - 6rem - .75rem);
   }
 
   &.open{
@@ -226,6 +277,11 @@
     flex-direction: column;
     gap: 2rem 0;
     margin-bottom: 2.5rem;
+
+    @include laptop{
+      gap: 1rem 0;
+      margin-bottom: 2rem;
+    }
   }
 
   .button-ui{
