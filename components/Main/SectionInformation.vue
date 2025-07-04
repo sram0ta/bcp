@@ -127,16 +127,36 @@ async function loadAllProjects() {
   }
 }
 
-// --- Пагинация по 4 проекта ---
+// --- Пагинация с анимацией новых элементов ---
 function loadNextProjects() {
   const start = (currentPage - 1) * projectsPerPage
   const end = start + projectsPerPage
   const nextProjects = allProjects.value.slice(start, end)
 
+  const previousLength = visibleProjects.value.length
   visibleProjects.value.push(...nextProjects)
-  currentPage++;
+  currentPage++
 
-  ScrollTrigger.refresh();
+  nextTick(() => {
+    const allItems = document.querySelectorAll('.projects__item')
+    const newItems = Array.from(allItems).slice(previousLength)
+
+    newItems.forEach((el) => {
+      el.style.opacity = '0'
+      el.style.transform = 'translateY(50px)'
+    })
+
+    gsap.to(newItems, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: 'power2.out',
+      stagger: 0.1,
+      onComplete: () => {
+        ScrollTrigger.refresh()
+      },
+    })
+  })
 }
 
 const name: Ref<string> = ref('')
@@ -204,7 +224,7 @@ async function submitForm() {
   }
 
   try {
-    const response = await fetch('https://bcp-api.kn-dev.ru/wp-json/custom/v1/send-mail', {
+    const response = await fetch('https://api.b-dp.ru/wp-json/custom/v1/send-mail', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -424,6 +444,7 @@ onMounted(async () => {
           </div>
         </div>
         <div class="direction" ref="blockDirectionRef">
+          <div class="anchor" id="directions"></div>
           <h2 class="direction__title h2">{{ directionTitle }} ({{ directionList.length }})</h2>
           <div class="direction__list">
             <div
@@ -453,9 +474,9 @@ onMounted(async () => {
           </div>
         </div>
         <div class="projects" ref="blockProjectsRef">
+          <div class="anchor" id="projects"></div>
           <h2 class="projects__title h2 animate-title">{{ projectTitle }}</h2>
           <div class="projects__list">
-            <div class="projects__list">
               <div
                   class="projects__item animate-opacity"
                   v-for="(item, index) in visibleProjects"
@@ -480,7 +501,6 @@ onMounted(async () => {
               </div>
 
             </div>
-          </div>
           <button
               class="button-ui button-ui_bg-red"
               @click="loadNextProjects"
@@ -543,5 +563,11 @@ onMounted(async () => {
   mix-blend-mode: multiply;
   opacity: 1;
   z-index: 0;
+
+  @media (max-width: 576px) {
+    top: 55rem;
+    width: 100%;
+    height: 15rem;
+  }
 }
 </style>

@@ -37,6 +37,11 @@
   &__logo{
     width: 27.65rem;
     height: 7.75rem;
+
+    @include mobile{
+      width: 11.35rem;
+      height: 3.15rem;
+    }
   }
 
   &__done{
@@ -60,7 +65,7 @@
   }
 
   @include mobile {
-    padding: .5rem .5rem 0 .5rem;
+    padding: 1.25rem .5rem 0 .5rem;
   }
 
   &.hidden{
@@ -79,6 +84,11 @@
       height: 1.55rem;
     }
 
+    @include mobile{
+      width: 3.45rem;
+      height: .95rem;
+    }
+
     &:hover{
       opacity: .5;
       transition: .5s;
@@ -95,6 +105,10 @@
     display: flex;
     align-items: center;
     gap: 0 1.5rem;
+
+    @include mobile{
+      display: none;
+    }
 
     &__link{
       display: flex;
@@ -126,6 +140,10 @@
     display: flex;
     align-items: center;
     gap: 0 .5rem;
+
+    @include mobile{
+      display: none;
+    }
   }
 }
 
@@ -149,6 +167,15 @@
     transform: translateX(calc(100% + 1rem));
   }
 
+  @include mobile {
+    top: .5rem;
+    right: .5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .5rem;
+    transform: translateX(0);
+  }
+
   &:hover{
 
     .burger__item{
@@ -165,6 +192,10 @@
 
     .burger__item {
       left: calc(50% - 1rem);
+
+      @include mobile {
+        left: calc(50% - .5rem);
+      }
 
       &:first-child {
         transform: rotate(45deg);
@@ -192,12 +223,25 @@
     transform-origin: center;
     transition: 0.5s;
 
+    @include mobile{
+      width: 1rem;
+      height: 1px;
+    }
+
     &:first-child {
       transform: translate(-50%, -6px);
+
+      @include mobile{
+        transform: translate(-50%, -3px);
+      }
     }
 
     &:last-child {
       transform: translate(-50%, 6px);
+
+      @include mobile{
+        transform: translate(-50%, 3px);
+      }
     }
   }
 }
@@ -237,6 +281,15 @@
     height: calc(100% - 6rem - .75rem);
   }
 
+  @include mobile {
+    top: 3.5rem;
+    right: .5rem;
+    width: calc(100% - 1rem);
+    height: calc(100% - 3.5rem - .5rem);
+    padding: 1rem .5rem .5rem .5rem;
+    border-radius: 1rem;
+  }
+
   &.open{
     opacity: 1;
     visibility: initial;
@@ -248,6 +301,17 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem 0;
+
+    @include mobile {
+      gap: 1rem 0;
+    }
+
+    .burger-menu__item{
+
+      @include mobile {
+        font-size: 1.25rem;
+      }
+    }
   }
 
   &__item{
@@ -281,6 +345,10 @@
     @include laptop{
       gap: 1rem 0;
       margin-bottom: 2rem;
+    }
+
+    @include mobile{
+      margin-bottom: 1.5rem;
     }
   }
 

@@ -38,6 +38,13 @@ onMounted(() => {
     mix-blend-mode: multiply;
     opacity: 0.7;
     z-index: 0;
+
+    @media (max-width: 576px) {
+      top: 15.5rem;
+      width: 100%;
+      height: 25rem;
+      right: initial;
+    }
   }
 
   .main-image-2 {
@@ -53,6 +60,13 @@ onMounted(() => {
     mix-blend-mode: multiply;
     opacity: 0.7;
     z-index: 0;
+
+    @media (max-width: 576px) {
+      top: 60rem;
+      width: 100%;
+      height: 25rem;
+      right: initial;
+    }
   }
 
 </style>

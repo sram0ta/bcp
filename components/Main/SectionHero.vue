@@ -10,11 +10,12 @@ interface SectionHero {
   }
 }
 
-import {ref, onMounted, nextTick} from 'vue'
+import {ref, onMounted, nextTick, watch} from 'vue'
 import { WpApi } from '~/composables/WpApi'
 import {useAnimations} from '~/composables/animation/BlockAnimation'
 const blockRef = ref<HTMLElement | null>(null)
 const { blockAnimation, fadeInAnimation } = useAnimations()
+import { isPreloaderDone } from '@/composables/animation/BlockAnimation'
 
 import { gsap } from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
@@ -58,8 +59,14 @@ onMounted(async () => {
       await nextTick()
       ScrollTrigger.refresh()
 
-      await blockAnimation(blockRef.value, '.animate-title')
-      fadeInAnimation(blockRef.value, '.animate-opacity')
+
+      watch(isPreloaderDone, async (val) => {
+        if (val) {
+          await blockAnimation(blockRef.value, '.animate-title')
+          fadeInAnimation(blockRef.value, '.animate-opacity')
+        }
+      }, { immediate: true })
+
     } else {
       console.warn('Неполные данные:', response);
     }
@@ -76,17 +83,20 @@ const titleWords = computed(() => {
 
 <template>
   <div class="container hero" ref="blockRef">
-    <h1 class="hero__title__inner h1 animate-title">
-      {{ titleWords[0] }}
+    <div class="hero__inner">
+      <h1 class="hero__title__inner h1 animate-title">
+        {{ titleWords[0] }}
         {{ titleWords[1] }}
-      <img
-          :src="heroIconUrl"
-          :alt="heroIconAlt"
-          class="hero__title__icon"
-      />
-      {{ titleWords[2] }}
-    </h1>
-    <div class="hero__description p1 animate-opacity">{{ heroDescription }}</div>
+        <img
+            :src="heroIconUrl"
+            :alt="heroIconAlt"
+            class="hero__title__icon"
+        />
+        <br>
+        {{ titleWords[2] }}
+      </h1>
+      <div class="hero__description p1 animate-opacity">{{ heroDescription }}</div>
+    </div>
     <div class="button-container animate-opacity">
       <ui-button
         :href="heroButtonHref"

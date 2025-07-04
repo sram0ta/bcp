@@ -54,7 +54,7 @@ onMounted(async () => {
 
 <template>
   <div class="container about grid-12">
-    <div class="anchor" id="about-us"></div>
+    <div class="anchor anchor-about" id="about-us"></div>
     <div class="about__inner">
       <h2 class="about__title h2" ref="aboutTitleRef">{{ aboutTitle }}</h2>
       <p class="about__description p1">{{ aboutDescription }}</p>

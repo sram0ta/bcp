@@ -48,6 +48,7 @@ const emit = defineEmits(['close'])
     width: 100%;
     height: 100%;
     z-index: 9999999999999;
+    grid-template-rows: min-content;
 
     &__background{
       position: absolute;
@@ -79,6 +80,15 @@ const emit = defineEmits(['close'])
         height: 4rem;
       }
 
+      @media (max-width: 576px) {
+        grid-column: 1 / -1;
+        margin-top: .5rem;
+        justify-self: flex-end;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: .5rem;
+      }
+
       svg{
         width: 1.6rem;
         height: 1.6rem;
@@ -86,6 +96,11 @@ const emit = defineEmits(['close'])
         @media (max-width: 1440px) {
           width: 1.4rem;
           height: 1.4rem;
+        }
+
+        @media (max-width: 576px) {
+          width: .75rem;
+          height: .75rem;
         }
       }
     }
@@ -109,6 +124,14 @@ const emit = defineEmits(['close'])
         gap: 2rem 0;
       }
 
+      @media (max-width: 576px) {
+        grid-column: 1 / -1;
+        margin: .5rem 0;
+        padding: 1rem;
+        border-radius: 1rem;
+        gap: 1rem 0;
+      }
+
       &::-webkit-scrollbar {
         display: none;
       }
@@ -118,16 +141,27 @@ const emit = defineEmits(['close'])
         align-items: center;
         gap: 0 1rem;
 
+        @media (max-width: 576px) {
+          gap: 0 .5rem;
+        }
+
         &__image{
           width: 4.65rem;
           height: 4.65rem;
           object-fit: cover;
           object-position: center;
-          border-radius: 20px;
+          border-radius: 2rem;
 
           @media (max-width: 1440px) {
             width: 4rem;
             height: 4rem;
+            border-radius: 1rem;
+          }
+
+          @media (max-width: 576px) {
+            width: 3rem;
+            height: 3rem;
+            border-radius: .75rem;
           }
         }
 

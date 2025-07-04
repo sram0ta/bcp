@@ -56,7 +56,7 @@ body{
   scroll-behavior: smooth;
 
   &.fixed{
-    overflow-y: hidden;
+    overflow-y: hidden !important;
   }
 }
 
@@ -72,6 +72,10 @@ h1, .h1{
 
   @include laptop {
     font-size: 5.5rem;
+  }
+
+  @include mobile {
+    font-size: 1.9rem;
   }
 }
 
@@ -104,6 +108,10 @@ h3, .h3{
 
   @include laptop {
     font-size: 1rem;
+  }
+
+  @include mobile {
+    font-size: .7rem;
   }
 }
 
@@ -211,7 +219,7 @@ h4, .h4{
 
 .anchor{
   position: absolute;
-  top: -10rem;
+  top: -5rem;
   left: 0;
   visibility: hidden;
   opacity: 0;
@@ -219,7 +227,15 @@ h4, .h4{
   z-index: -999999;
 
   @include laptop {
-    top: -7.5rem;
+    top: -2.5rem;
+  }
+
+  &-about{
+    top: -10rem;
+
+    @include laptop {
+      top: -7.5rem;
+    }
   }
 }
 
@@ -279,6 +295,11 @@ h4, .h4{
   color: $c-b;
   transition: .5s;
 
+  @include mobile {
+    padding: .8rem 1rem;
+    border-radius: 1rem;
+  }
+
   &::placeholder {
     color: rgba(90, 89, 89, 0.4);
   }
@@ -302,6 +323,10 @@ textarea{
 
     @include laptop {
       height: 8.75rem;
+    }
+
+    @include mobile {
+      height: 7.5rem;
     }
   }
 }

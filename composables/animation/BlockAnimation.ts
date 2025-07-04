@@ -1,8 +1,11 @@
 import { gsap } from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import SplitText from 'gsap/SplitText'
+import { ref } from 'vue'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
+
+export const isPreloaderDone = ref(false)
 
 export function useAnimations() {
   /**

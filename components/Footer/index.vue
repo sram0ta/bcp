@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import {onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import {useAnimations} from '~/composables/animation/BlockAnimation'
+import {WpApi} from '~/composables/WpApi'
 
 const {scrollDirectionShiftAnimation } = useAnimations()
 
@@ -11,8 +12,56 @@ const scrollToTop = () => {
   })
 }
 
+const { fetchData } = WpApi()
+const wpData = ref<any>(null)
+
+const loadPageData = async () => {
+  const data = await fetchData('pages', '16?_fields=acf')
+  wpData.value = data?.acf || null
+}
+
+const contactEmail = ref('')
+const contactPhone = ref('')
+const contactAddress = ref('')
+const contactAddressTitle = ref('')
+const contactAddressUrl = ref('')
+const presentationFile = ref('',)
+const personalFile = ref('',)
+const privacyFile = ref('',)
+
+
 onMounted( async () =>{
-  scrollDirectionShiftAnimation(document.body, '.animate-shift')
+  scrollDirectionShiftAnimation(document.body, '.animate-shift');
+
+  loadPageData();
+
+  try {
+    const response = await fetch('https://api.b-dp.ru/wp-json/custom/v1/options')
+    if (!response.ok) throw new Error('Ошибка при получении данных')
+    const pageData = await response.json()
+
+    if (pageData?.acf) {
+      contactEmail.value = pageData.acf['e-mail'] || ''
+      contactPhone.value = pageData.acf.phone || ''
+      const address = pageData.acf['address'] || {}
+      contactAddressTitle.value = address.title || ''
+      contactAddressUrl.value = address.url || ''
+      presentationFile.value = pageData.acf['presentation'] || ''
+      personalFile.value = pageData.acf['personal'] || ''
+      privacyFile.value = pageData.acf['privacy'] || ''
+    }
+
+    console.log(contactAddress)
+
+    console.log('ACF Options:', pageData)
+  } catch (err) {
+    console.error('Ошибка загрузки данных ACF:', err)
+  }
+
+})
+
+const contactPhoneClean = computed(() => {
+  return contactPhone.value.replace(/[^\d+]/g, '')
 })
 
 </script>
@@ -22,6 +71,7 @@ onMounted( async () =>{
     <div class="main-image-4 animate-shift"></div>
     <div class="main-image-5 animate-shift"></div>
     <footer class="footer container grid-12">
+      <div class="anchor" id="contacts"></div>
       <div class="footer__information">
         <nuxt-link to="/" class="footer__information__logo">
           <svg width="240" height="68" viewBox="0 0 240 68" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,7 +88,7 @@ onMounted( async () =>{
             </svg>
             Бюро Цифровых Проектов
           </div>
-          <a href="#" class="footer__information__download__link p2" download>
+          <a :href="presentationFile" class="footer__information__download__link p2" download>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="14" height="14" rx="3" fill="#F2F2F2"/>
               <path d="M7 2V10M7 10L10 7M7 10L4 7M4 11H10" stroke="#3C3C3C"/>
@@ -46,26 +96,33 @@ onMounted( async () =>{
             Скачать презентацию (PDF)
           </a>
         </div>
-        <div class="footer__information__address">
+        <div class="footer__information__address footer__information__address_pc">
           <div class="footer__information__address__title p1">Адрес</div>
-          <div class="footer__information__address__main h3">Москва, Профсоюзная ул., 45А</div>
-          <a href="#" class="footer__information__address__map p1">Смотреть на карте</a>
+          <div class="footer__information__address__main h3">{{ contactAddressTitle }}</div>
+          <a :href="contactAddressUrl" class="footer__information__address__map p1" target="_blank">Смотреть на карте</a>
         </div>
       </div>
       <div class="footer__navigation">
+        <div class="footer__information__address footer__information__address_mobile">
+          <div class="footer__information__address__title p1">Адрес</div>
+          <div class="footer__information__address__main h3">{{ contactAddressTitle }}</div>
+          <a :href="contactAddressUrl" class="footer__information__address__map p1" target="_blank">Смотреть на карте</a>
+        </div>
         <div class="footer__navigation__inner">
           <div class="footer__navigation__title p1">Навигация</div>
-          <a href="" class="footer__navigation__link h3">О нас</a>
-          <a href="" class="footer__navigation__link h3">Направления</a>
-          <a href="" class="footer__navigation__link h3">Наши проекты</a>
+          <a href="#about-us" class="footer__navigation__link h3">О нас</a>
+          <a href="#directions" class="footer__navigation__link h3">Направления</a>
+          <a href="#projects" class="footer__navigation__link h3">Наши проекты</a>
         </div>
-        <div class="footer__navigation__inner">
-          <div class="footer__navigation__title p1">Email</div>
-          <a href="mailto:info@b-dp.ru" class="footer__navigation__link h3">info@b-dp.ru</a>
-        </div>
-        <div class="footer__navigation__inner">
-          <div class="footer__navigation__title p1">Телефон</div>
-          <a href="tel:+74950188889" class="footer__navigation__link h3">+7 (495) 018-88-89</a>
+        <div class="footer__navigation__social">
+          <div class="footer__navigation__inner">
+            <div class="footer__navigation__title p1">Email</div>
+            <a :href="`mailto:${contactEmail}`" class="footer__navigation__link h3">{{ contactEmail }}</a>
+          </div>
+          <div class="footer__navigation__inner">
+            <div class="footer__navigation__title p1">Телефон</div>
+            <a :href="`tel:${contactPhoneClean}`" class="footer__navigation__link h3">{{ contactPhone }}</a>
+          </div>
         </div>
       </div>
       <div class="footer__up" @click="scrollToTop">
@@ -87,7 +144,7 @@ onMounted( async () =>{
       </div>
       <div class="footer__privacy">
         <div class="p2">Бюро Цифровых Проектов ©2025</div>
-        <a href="#" class="p2">Политика конфеденциальности</a>
+        <a :href="privacyFile" class="p2">Политика конфеденциальности</a>
       </div>
     </footer>
   </div>
@@ -96,6 +153,7 @@ onMounted( async () =>{
 <style scoped>
 .footer__inner{
   position: relative;
+  overflow: hidden;
 }
 
 .main-image-4{
@@ -111,7 +169,15 @@ onMounted( async () =>{
   mix-blend-mode: multiply;
   opacity: 1;
   z-index: 0;
+
+  @media (max-width: 576px) {
+    top: 23rem;
+    left: 0;
+    width: 100%;
+    height: 15rem;
+  }
 }
+
 .main-image-5{
   position: absolute;
   top: 15rem;
@@ -125,5 +191,12 @@ onMounted( async () =>{
   mix-blend-mode: multiply;
   opacity: 1;
   z-index: 0;
+
+  @media (max-width: 576px) {
+    top: 5rem;
+    right: -4rem;
+    width: 100%;
+    height: 15rem;
+  }
 }
 </style>
